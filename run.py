@@ -10,10 +10,16 @@ import numpy as np
 
 def main():
     model = VGG16Layers()
+    xp = np
+    if args.gpu >= 0:
+        xp = chainer.cuda.cupy
+        chainer.cuda.get_device_from_id(args.gpu).use()
+        model.to_gpu()
+
     img = cv2.imread(args.input, 1)
     acts = model.extract((img[:, :, ::-1],), layers=[args.layer, 'prob'])
 
-    one_hot = np.zeros((1, 1000), dtype=np.float32)
+    one_hot = xp.zeros((1, 1000), dtype=np.float32)
     if args.label == -1:
         one_hot[:, acts['prob'].data.argmax()] = 1
     else:
@@ -21,12 +27,12 @@ def main():
     loss = F.sum(chainer.Variable(one_hot) * acts['prob'])
     loss.backward(retain_grad=True)
 
-    weights = np.mean(acts[args.layer].grad.data, axis=(2, 3))
-    cam = np.zeros(acts[args.layer].data.shape[2:])
+    weights = xp.mean(acts[args.layer].grad, axis=(2, 3))
+    cam = xp.zeros(acts[args.layer].data.shape[2:])
     for w, fmap in zip(weights[0], acts[args.layer].data[0]):
         cam += w * fmap
     cam /= cam.max()
-    cam = (cam > 0) * cam
+    cam = chainer.cuda.to_cpu((cam > 0) * cam)
     cam = cv2.resize(np.uint8(cam * 255), (224, 224))
 
     heatmap = cv2.applyColorMap(cam, cv2.COLORMAP_JET)
