@@ -28,9 +28,7 @@ def main():
     loss.backward(retain_grad=True)
 
     weights = xp.mean(acts[args.layer].grad, axis=(2, 3))
-    cam = xp.zeros(acts[args.layer].data.shape[2:])
-    for w, fmap in zip(weights[0], acts[args.layer].data[0]):
-        cam += w * fmap
+    cam = xp.tensordot(weights[0], acts[args.layer].data[0], axes=(0, 0))
     cam /= cam.max()
     cam = chainer.cuda.to_cpu((cam > 0) * cam)
     cam = cv2.resize(np.uint8(cam * 255), (224, 224))
