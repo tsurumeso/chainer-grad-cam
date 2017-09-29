@@ -9,8 +9,8 @@ import numpy as np
 
 
 def main():
-    model = VGG16Layers()
     xp = np
+    model = VGG16Layers()
     if args.gpu >= 0:
         xp = chainer.cuda.cupy
         chainer.cuda.get_device_from_id(args.gpu).use()
@@ -29,12 +29,13 @@ def main():
 
     weights = xp.mean(acts[args.layer].grad, axis=(2, 3))
     cam = xp.tensordot(weights[0], acts[args.layer].data[0], axes=(0, 0))
-    cam /= cam.max()
-    cam = chainer.cuda.to_cpu((cam > 0) * cam)
-    cam = cv2.resize(np.uint8(cam * 255), (224, 224))
+    cam = (cam > 0) * cam / cam.max()
+    cam = chainer.cuda.to_cpu(cam * 255)
+    cam = cv2.resize(np.uint8(cam), (224, 224))
 
     heatmap = cv2.applyColorMap(cam, cv2.COLORMAP_JET)
-    img = img * 0.5 + heatmap + 0.5
+    img = np.float32(img) + np.float32(heatmap)
+    img = 255 * img / img.max()
     cv2.imwrite('heatmap.png', img)
 
 
