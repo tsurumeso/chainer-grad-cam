@@ -19,6 +19,7 @@ def main():
     guided_backprop = gradcam.GuidedBackprop(copy.deepcopy(model), args.label)
 
     img = cv2.imread(args.input, 1)
+    img = cv2.resize(img, (224, 224))
     gcam = grad_cam.generate(img, args.layer)
     gbp = guided_backprop.generate(img, args.layer)
 
