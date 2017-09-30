@@ -1,22 +1,24 @@
 # chainer-grad-cam
 
-Chainer implementation of Grad-CAM [1]. This code use VGG16Layers ImageNet classification model to generate CAM.
+Chainer implementation of Grad-CAM [1]. This code uses VGG16Layers ImageNet classification model to generate CAM.
 
 ## Summery
 
-![](https://github.com/tsurumeso/chainer-grad-cam/blob/master/images/summery.png?raw=true)
+||Grad-CAM|Guided Backpropagation|Guided Grad-CAM|
+|:-:|:-:|:-:|:-:|
+|Boxer (242)|![](images/dog_gcam.png)|![](images/dog_gbp.png)|![](images/dog_ggcam.png)|
+|Tiger Cat (282)|![](images/cat_gcam.png)|![](images/cat_gbp.png)|![](images/cat_ggcam.png)|
 
 ## Requirements
 
 - Chainer
-- Cupy (Optional, CUDA library required)
+- Cupy (for GPU support)
 - OpenCV
-- Pillow
 
 ## Usage
 ```
-python run.py --input images/boxer_cat.png --label 242 --layer conv5_3 --gpu 0
-python run.py --input images/boxer_cat.png --label 282 --layer conv5_3 --gpu 0
+python run.py --input images/dog_cat.png --label 242 --layer conv5_3 --gpu 0
+python run.py --input images/dog_cat.png --label 282 --layer conv5_3 --gpu 0
 ```
 
 ## References
