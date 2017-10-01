@@ -5,7 +5,7 @@ import chainer
 import cv2
 import numpy as np
 
-from lib import gradcam
+from lib import backprop
 import models
 
 
@@ -15,8 +15,8 @@ def main():
         chainer.cuda.get_device_from_id(args.gpu).use()
         model.to_gpu()
 
-    grad_cam = gradcam.GradCAM(model, args.label)
-    guided_backprop = gradcam.GuidedBackprop(copy.deepcopy(model), args.label)
+    grad_cam = backprop.GradCAM(model, args.label)
+    guided_backprop = backprop.GuidedBackprop(copy.deepcopy(model), args.label)
 
     img = cv2.imread(args.input, 1)
     img = cv2.resize(img, (224, 224))
