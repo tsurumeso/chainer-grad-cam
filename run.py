@@ -15,13 +15,13 @@ def main():
         chainer.cuda.get_device_from_id(args.gpu).use()
         model.to_gpu()
 
-    grad_cam = backprop.GradCAM(model, args.label)
-    guided_backprop = backprop.GuidedBackprop(copy.deepcopy(model), args.label)
+    grad_cam = backprop.GradCAM(model)
+    guided_backprop = backprop.GuidedBackprop(copy.deepcopy(model))
 
     img = cv2.imread(args.input, 1)
     img = cv2.resize(img, (224, 224))
-    gcam = grad_cam.generate(img, args.layer)
-    gbp = guided_backprop.generate(img, args.layer)
+    gcam = grad_cam.generate(img, args.label, args.layer)
+    gbp = guided_backprop.generate(img, args.label, args.layer)
 
     ggcam = gbp * gcam[:, :, np.newaxis]
     ggcam -= ggcam.min()
