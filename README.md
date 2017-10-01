@@ -1,6 +1,8 @@
 # chainer-grad-cam
 
-Chainer implementation of Grad-CAM [1]. This code uses VGG16Layers ImageNet classification model to generate CAM.
+Chainer implementation of Grad-CAM [1]. Grad-CAM can localize and highlight
+important region in the image for predicting the concept without changing the
+model architecture. This code uses VGG16Layers ImageNet classification model.
 
 ## Summery
 
@@ -24,5 +26,5 @@ python run.py --input images/dog_cat.png --label 282 --layer conv5_3 --gpu 0
 ## References
 
 - [1] Ramprasaath R. Selvaraju, Abhishek Das, Ramakrishna Vedantam, Michael Cogswell, Devi Parikh, Dhruv Batra,
-"Grad-CAM: Why did you say that? Visual Explanations from Deep Networks via Gradient-based Localization",
+"Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
 https://arxiv.org/abs/1610.02391
