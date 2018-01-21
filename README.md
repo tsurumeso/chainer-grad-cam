@@ -4,7 +4,7 @@ Chainer implementation of Grad-CAM [1]. Grad-CAM can localize and highlight
 important region in the image for predicting the concept without changing the
 model architecture. This code uses VGG16Layers ImageNet classification model.
 
-## Summery
+## Summary
 
 ||Grad-CAM|Guided Backpropagation|Guided Grad-CAM|
 |:-:|:-:|:-:|:-:|
