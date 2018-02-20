@@ -1,21 +1,17 @@
 from __future__ import print_function
 import collections
-import os
-
-import numpy as np
 
 import chainer
 import chainer.functions as F
 import chainer.links as L
 
-from chainer.dataset import download
-from chainer.serializers import npz
+from lib.models import utils
 
 
-class VGG16Layers(chainer.link.Chain):
+class VGG(chainer.link.Chain):
 
     def __init__(self):
-        super(VGG16Layers, self).__init__()
+        super(VGG, self).__init__()
         with self.init_scope():
             self.conv1_1 = L.Convolution2D(3, 64, 3, 1, 1)
             self.conv1_2 = L.Convolution2D(64, 64, 3, 1, 1)
@@ -34,12 +30,13 @@ class VGG16Layers(chainer.link.Chain):
             self.fc7 = L.Linear(4096, 4096)
             self.fc8 = L.Linear(4096, 1000)
 
-        _retrieve(
+        utils._retrieve(
             'VGG_ILSVRC_16_layers.npz',
             'http://www.robots.ox.ac.uk/%7Evgg/software/very_deep/'
             'caffe/VGG_ILSVRC_16_layers.caffemodel',
             self)
 
+        self.size = 224
         self.functions = collections.OrderedDict([
             ('conv1_1', [self.conv1_1, F.relu]),
             ('conv1_2', [self.conv1_2, F.relu]),
@@ -65,12 +62,6 @@ class VGG16Layers(chainer.link.Chain):
             ('prob', [F.softmax]),
         ])
 
-    @classmethod
-    def convert_caffemodel_to_npz(cls, path_caffemodel, path_npz):
-        from chainer.links.caffe.caffe_function import CaffeFunction
-        caffemodel = CaffeFunction(path_caffemodel)
-        npz.save_npz(path_npz, caffemodel, compression=False)
-
     def __call__(self, x, layers=['prob']):
         h = x
         activations = {'input': x}
@@ -85,34 +76,10 @@ class VGG16Layers(chainer.link.Chain):
                 target_layers.remove(key)
         return activations
 
-    def extract(self, image, layers=['fc7']):
-        x = prepare(image)
+    def extract(self, x, layers=['fc7']):
         x = chainer.Variable(self.xp.asarray(x))
         return self(x, layers=layers)
 
 
-def prepare(image):
-    image = image.astype(dtype=np.float32)
-    image -= np.array([103.939, 116.779, 123.68], dtype=np.float32)
-    image = image.transpose(2, 0, 1).reshape(1, 3, 224, 224)
-    return image
-
-
 def _max_pooling_2d(x):
     return F.max_pooling_2d(x, ksize=2)
-
-
-def _make_npz(path_npz, url, model):
-    path_caffemodel = download.cached_download(url)
-    print('Now loading caffemodel (usually it may take few minutes)')
-    VGG16Layers.convert_caffemodel_to_npz(path_caffemodel, path_npz)
-    npz.load_npz(path_npz, model)
-    return model
-
-
-def _retrieve(name, url, model):
-    root = download.get_dataset_directory('pfnet/chainer/models/')
-    path = os.path.join(root, name)
-    return download.cache_or_load_file(
-        path, lambda path: _make_npz(path, url, model),
-        lambda path: npz.load_npz(path, model))

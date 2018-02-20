@@ -11,6 +11,7 @@ class BaseBackprop(object):
 
     def __init__(self, model):
         self.model = model
+        self.size = model.size
         self.xp = model.xp
 
     def backward(self, x, label, layer):
@@ -38,7 +39,7 @@ class GradCAM(BaseBackprop):
         gcam = self.xp.tensordot(weights[0], acts[layer].data[0], axes=(0, 0))
         gcam = (gcam > 0) * gcam / gcam.max()
         gcam = chainer.cuda.to_cpu(gcam * 255)
-        gcam = cv2.resize(np.uint8(gcam), (224, 224))
+        gcam = cv2.resize(np.uint8(gcam), (self.size, self.size))
 
         return gcam
 
