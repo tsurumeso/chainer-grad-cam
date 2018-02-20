@@ -13,8 +13,8 @@ p = argparse.ArgumentParser()
 p.add_argument('--input', '-i', default='images/dog_cat.png')
 p.add_argument('--gpu', '-g', type=int, default=-1)
 p.add_argument('--arch', '-a', choices=['alex', 'vgg'], default='vgg')
-p.add_argument('--label', '-l', type=int, default=-1)
-p.add_argument('--layer', default='conv5_3')
+p.add_argument('--label', '-y', type=int, default=-1)
+p.add_argument('--layer', '-l', default='conv5_3')
 args = p.parse_args()
 
 
