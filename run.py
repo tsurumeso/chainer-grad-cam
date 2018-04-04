@@ -33,8 +33,8 @@ if __name__ == '__main__':
 
     src = cv2.imread(args.input, 1)
     src = cv2.resize(src, (model.size, model.size))
-    src = src.astype(np.float32) - np.float32([103.939, 116.779, 123.68])
-    x = src.transpose(2, 0, 1)[np.newaxis, :, :, :]
+    x = src.astype(np.float32) - np.float32([103.939, 116.779, 123.68])
+    x = x.transpose(2, 0, 1)[np.newaxis, :, :, :]
 
     gcam = grad_cam.generate(x, args.label, args.layer)
     gbp = guided_backprop.generate(x, args.label, args.layer)
