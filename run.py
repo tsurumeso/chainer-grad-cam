@@ -1,5 +1,4 @@
 import argparse
-import copy
 
 import chainer
 import cv2
@@ -29,7 +28,7 @@ if __name__ == '__main__':
         model.to_gpu()
 
     grad_cam = backprop.GradCAM(model)
-    guided_backprop = backprop.GuidedBackprop(copy.deepcopy(model))
+    guided_backprop = backprop.GuidedBackprop(model)
 
     src = cv2.imread(args.input, 1)
     src = cv2.resize(src, (model.size, model.size))

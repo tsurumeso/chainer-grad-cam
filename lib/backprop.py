@@ -1,3 +1,5 @@
+import copy
+
 import cv2
 import numpy as np
 
@@ -47,8 +49,8 @@ class GradCAM(BaseBackprop):
 class GuidedBackprop(BaseBackprop):
 
     def __init__(self, model):
-        super(GuidedBackprop, self).__init__(model)
-        for key, funcs in model.functions.items():
+        super(GuidedBackprop, self).__init__(copy.deepcopy(model))
+        for key, funcs in self.model.functions.items():
             for i in range(len(funcs)):
                 if funcs[i] is F.relu:
                     funcs[i] = GuidedReLU()
