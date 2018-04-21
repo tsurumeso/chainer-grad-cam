@@ -35,6 +35,9 @@ class BaseBackprop(object):
 
 class GradCAM(BaseBackprop):
 
+    def __init__(self, model):
+        super(GradCAM, self).__init__(model)
+
     def generate(self, x, label, layer):
         acts = self.backward(x, label, layer)
         weights = self.xp.mean(acts[layer].grad, axis=(2, 3))
