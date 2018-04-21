@@ -4,8 +4,8 @@ import chainer
 import cv2
 import numpy as np
 
+import models
 from lib import backprop
-from lib import models
 
 
 p = argparse.ArgumentParser()

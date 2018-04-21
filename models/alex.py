@@ -5,7 +5,7 @@ import chainer
 import chainer.functions as F
 import chainer.links as L
 
-from lib.models import utils
+from lib import utils
 
 
 class Alex(chainer.link.Chain):
