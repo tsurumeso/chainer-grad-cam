@@ -18,7 +18,7 @@ class BaseBackprop(object):
 
     def backward(self, x, label, layer):
         with chainer.using_config('train', False):
-            acts = self.model.extract(x, layers=[layer, 'prob'])
+            acts = self.model(x, layers=[layer, 'prob'])
 
         one_hot = self.xp.zeros((1, 1000), dtype=np.float32)
         if label == -1:

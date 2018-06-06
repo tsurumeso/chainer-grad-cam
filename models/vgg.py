@@ -1,4 +1,3 @@
-from __future__ import print_function
 import collections
 
 import chainer
@@ -8,10 +7,10 @@ import chainer.links as L
 from lib import utils
 
 
-class VGG(chainer.link.Chain):
+class VGG16Layers(chainer.Chain):
 
     def __init__(self):
-        super(VGG, self).__init__()
+        super(VGG16Layers, self).__init__()
         with self.init_scope():
             self.conv1_1 = L.Convolution2D(3, 64, 3, 1, 1)
             self.conv1_2 = L.Convolution2D(64, 64, 3, 1, 1)
@@ -63,8 +62,8 @@ class VGG(chainer.link.Chain):
         ])
 
     def __call__(self, x, layers=['prob']):
-        h = x
-        activations = {'input': x}
+        h = chainer.Variable(x)
+        activations = {'input': h}
         target_layers = set(layers)
         for key, funcs in self.functions.items():
             if len(target_layers) == 0:
@@ -75,10 +74,6 @@ class VGG(chainer.link.Chain):
                 activations[key] = h
                 target_layers.remove(key)
         return activations
-
-    def extract(self, x, layers=['fc7']):
-        x = chainer.Variable(self.xp.asarray(x))
-        return self(x, layers=layers)
 
 
 def _max_pooling_2d(x):
