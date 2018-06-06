@@ -57,6 +57,18 @@ class GuidedBackprop(BaseBackprop):
             for i in range(len(funcs)):
                 if funcs[i] is F.relu:
                     funcs[i] = GuidedReLU()
+                elif isinstance(funcs[i], chainer.Chain):
+                    self._replace_relu(funcs[i])
+
+    def _replace_relu(self, chain):
+        for child in chain.children():
+            if hasattr(child, 'functions'):
+                for key, funcs in child.functions.items():
+                    for i in range(len(funcs)):
+                        if funcs[i] is F.relu:
+                            funcs[i] = GuidedReLU()
+            elif isinstance(child, chainer.Chain):
+                self._replace_relu(child)
 
     def generate(self, x, label, layer):
         acts = self.backward(x, label, layer)

@@ -11,17 +11,21 @@ from lib import backprop
 p = argparse.ArgumentParser()
 p.add_argument('--input', '-i', default='images/dog_cat.png')
 p.add_argument('--gpu', '-g', type=int, default=-1)
-p.add_argument('--arch', '-a', choices=['alex', 'vgg'], default='vgg')
+p.add_argument('--arch', '-a',
+               choices=['alex', 'vgg', 'resnet'],
+               default='vgg')
 p.add_argument('--label', '-y', type=int, default=-1)
 p.add_argument('--layer', '-l', default='conv5_3')
 args = p.parse_args()
 
 
 if __name__ == '__main__':
-    if args.arch == 'vgg':
-        model = models.VGG()
-    elif args.arch == 'alex':
+    if args.arch == 'alex':
         model = models.Alex()
+    elif args.arch == 'vgg':
+        model = models.VGG16Layers()
+    elif args.arch == 'resnet':
+        model = models.ResNet152Layers()
 
     if args.gpu >= 0:
         chainer.cuda.get_device_from_id(args.gpu).use()
