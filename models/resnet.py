@@ -39,19 +39,12 @@ class ResNet152Layers(chainer.Chain):
         ])
 
     def convert_caffemodel_to_npz(self, path_caffemodel, path_npz):
-        """Converts a pre-trained caffemodel to a chainer model.
-        Args:
-            path_caffemodel (str): Path of the pre-trained caffemodel.
-            path_npz (str): Path of the converted chainer model.
-        """
-
         # As CaffeFunction uses shortcut symbols,
         # we import CaffeFunction here.
         from chainer.links.caffe.caffe_function import CaffeFunction
         caffemodel = CaffeFunction(path_caffemodel)
-        chainermodel = self()
-        _transfer_resnet152(caffemodel, chainermodel)
-        npz.save_npz(path_npz, chainermodel, compression=False)
+        _transfer_resnet152(caffemodel, self)
+        npz.save_npz(path_npz, self, compression=False)
 
     def __call__(self, x, layers=['prob']):
         h = chainer.Variable(x)
@@ -226,7 +219,7 @@ def _make_npz(path_npz, path_caffemodel, model):
             'The pre-trained caffemodel does not exist. Please download it '
             'from \'https://github.com/KaimingHe/deep-residual-networks\', '
             'and place it on {}'.format(path_caffemodel))
-    ResNet152Layers.convert_caffemodel_to_npz(path_caffemodel, path_npz)
+    model.convert_caffemodel_to_npz(path_caffemodel, path_npz)
     npz.load_npz(path_npz, model)
     return model
 
