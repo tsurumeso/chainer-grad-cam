@@ -4,7 +4,7 @@ from chainer.dataset import download
 from chainer.serializers import npz
 
 
-def convert_caffemodel_to_npz(cls, path_caffemodel, path_npz):
+def convert_caffemodel_to_npz(path_caffemodel, path_npz):
     from chainer.links.caffe.caffe_function import CaffeFunction
     caffemodel = CaffeFunction(path_caffemodel)
     npz.save_npz(path_npz, caffemodel, compression=False)
