@@ -2,7 +2,7 @@
 
 Chainer implementation of Grad-CAM [1]. Grad-CAM can localize and highlight
 important region in the image for predicting the concept without changing the
-model architecture. You can choose VGGNet or AlexNet as the model to generate
+model architecture. You can choose AlexNet, VGGNet or ResNet as the model to generate
 CAM images.
 
 ## Summary
