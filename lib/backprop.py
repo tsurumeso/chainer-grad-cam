@@ -20,15 +20,14 @@ class BaseBackprop(object):
         with chainer.using_config('train', False):
             acts = self.model(x, layers=[layer, 'prob'])
 
-        one_hot = self.xp.zeros((1, 1000), dtype=np.float32)
+        acts['prob'].grad = self.xp.zeros_like(acts['prob'].data)
         if label == -1:
-            one_hot[:, acts['prob'].data.argmax()] = 1
+            acts['prob'].grad[:, acts['prob'].data.argmax()] = 1
         else:
-            one_hot[:, label] = 1
+            acts['prob'].grad[:, label] = 1
 
         self.model.cleargrads()
-        loss = F.sum(chainer.Variable(one_hot) * acts['prob'])
-        loss.backward(retain_grad=True)
+        acts['prob'].backward(retain_grad=True)
 
         return acts
 
