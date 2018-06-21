@@ -41,7 +41,7 @@ class GradCAM(BaseBackprop):
         acts = self.backward(x, label, layer)
         weights = self.xp.mean(acts[layer].grad, axis=(2, 3))
         gcam = self.xp.tensordot(weights[0], acts[layer].data[0], axes=(0, 0))
-        gcam = (gcam > 0) * gcam / gcam.max()
+        gcam = self.xp.maximum(gcam / gcam.max(), 0)
         gcam = chainer.cuda.to_cpu(gcam * 255)
         gcam = cv2.resize(np.uint8(gcam), (self.size, self.size))
 
