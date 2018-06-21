@@ -18,7 +18,7 @@ class BaseBackprop(object):
 
     def backward(self, x, label, layer):
         with chainer.using_config('train', False):
-            acts = self.model(x, layers=[layer, 'prob'])
+            acts = self.model(self.xp.asarray(x), layers=[layer, 'prob'])
 
         acts['prob'].grad = self.xp.zeros_like(acts['prob'].data)
         if label == -1:
