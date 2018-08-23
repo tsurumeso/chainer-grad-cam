@@ -40,6 +40,8 @@ if __name__ == '__main__':
     x = x.transpose(2, 0, 1)[np.newaxis, :, :, :]
 
     gcam = grad_cam.generate(x, args.label, args.layer)
+    gcam = np.uint8(gcam * 255 / gcam.max())
+    gcam = cv2.resize(gcam, (model.size, model.size))
     gbp = guided_backprop.generate(x, args.label, args.layer)
 
     ggcam = gbp * gcam[:, :, np.newaxis]
