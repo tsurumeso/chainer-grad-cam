@@ -3,9 +3,9 @@ import os
 import sys
 
 import chainer
+from chainer.dataset import download
 import chainer.functions as F
 import chainer.links as L
-from chainer.dataset import download
 from chainer.serializers import npz
 
 
