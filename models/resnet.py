@@ -66,25 +66,23 @@ class BuildingBlock(chainer.Chain):
     def __init__(self, n_layer, in_channels, mid_channels, out_channels,
                  stride):
         super(BuildingBlock, self).__init__()
+        self.functions = collections.OrderedDict()
         with self.init_scope():
             self.a = BottleneckA(
                 in_channels, mid_channels, out_channels, stride)
-            self._forward = ["a"]
+            self.functions['a'] = [self.a]
             for i in range(n_layer - 1):
                 name = 'b{}'.format(i + 1)
                 bottleneck = BottleneckB(out_channels, mid_channels)
                 setattr(self, name, bottleneck)
-                self._forward.append(name)
+                self.functions[name] = [getattr(self, name)]
 
     def __call__(self, x):
-        for name in self._forward:
-            l = getattr(self, name)
-            x = l(x)
-        return x
-
-    @property
-    def forward(self):
-        return [getattr(self, name) for name in self._forward]
+        h = x
+        for key, funcs in self.functions.items():
+            for func in funcs:
+                h = func(h)
+        return h
 
 
 class BottleneckA(chainer.Chain):

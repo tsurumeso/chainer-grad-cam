@@ -2,7 +2,6 @@ import copy
 
 import chainer
 import chainer.functions as F
-import numpy as np
 
 from lib.functions import GuidedReLU
 
@@ -48,22 +47,7 @@ class GuidedBackprop(BaseBackprop):
 
     def __init__(self, model):
         super(GuidedBackprop, self).__init__(copy.deepcopy(model))
-        for key, funcs in self.model.functions.items():
-            for i in range(len(funcs)):
-                if funcs[i] is F.relu:
-                    funcs[i] = GuidedReLU()
-                elif isinstance(funcs[i], chainer.Chain):
-                    self._replace_relu(funcs[i])
-
-    def _replace_relu(self, chain):
-        for child in chain.children():
-            if hasattr(child, 'functions'):
-                for key, funcs in child.functions.items():
-                    for i in range(len(funcs)):
-                        if funcs[i] is F.relu:
-                            funcs[i] = GuidedReLU()
-            elif isinstance(child, chainer.Chain):
-                self._replace_relu(child)
+        _replace_relu(self.model)
 
     def generate(self, x, label, layer):
         acts = self.backward(x, label, layer)
@@ -71,3 +55,12 @@ class GuidedBackprop(BaseBackprop):
         gbp = gbp.transpose(1, 2, 0)
 
         return gbp
+
+
+def _replace_relu(chain):
+    for key, funcs in chain.functions.items():
+        for i in range(len(funcs)):
+            if hasattr(funcs[i], 'functions'):
+                _replace_relu(funcs[i])
+            elif funcs[i] is F.relu:
+                funcs[i] = GuidedReLU()
